@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 48" fill="none">
+  <defs>
+    <linearGradient id="gradPrimary" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#0369a1" />
+    </linearGradient>
+    <linearGradient id="metalGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#64748b" />
+      <stop offset="50%" stop-color="#94a3b8" />
+      <stop offset="100%" stop-color="#475569" />
+    </linearGradient>
+  </defs>
+
+  <!-- Conveyor Track & Link Icon -->
+  <g transform="translate(4, 6)">
+    <!-- Outer rounded hexagon/link -->
+    <rect x="0" y="2" width="34" height="32" rx="7" fill="url(#gradPrimary)" />
+    
+    <!-- Conveyor Belt Segment Lines inside Icon -->
+    <path d="M7 11h20M7 18h20M7 25h20" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="0.5 4.5" />
+    
+    <!-- Rollers / Bearings -->
+    <circle cx="10" cy="18" r="4.5" fill="#ffffff" />
+    <circle cx="10" cy="18" r="2" fill="#0284c7" />
+    <circle cx="24" cy="18" r="4.5" fill="#ffffff" />
+    <circle cx="24" cy="18" r="2" fill="#0284c7" />
+  </g>
+
+  <!-- Typography -->
+  <!-- ALUFLEX -->
+  <text x="48" y="25" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="20" font-weight="800" fill="currentColor" letter-spacing="1.5">
+    ALUFLEX
+  </text>
+
+  <!-- POWERED BY TEDES Subtitle -->
+  <rect x="48" y="30" width="138" height="12" rx="2" fill="#0284c7" fill-opacity="0.12" />
+  <text x="52" y="39" font-family="'JetBrains Mono', 'Courier New', monospace" font-size="7.5" font-weight="700" fill="#0284c7" letter-spacing="1.2">
+    POWERED BY TEDES
+  </text>
+</svg>

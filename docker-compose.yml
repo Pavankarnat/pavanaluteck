@@ -1,0 +1,34 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: aluflex-conveyor-backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - /app/app/__pycache__
+      - ./frontend/public/reference-model:/reference-model:ro
+    environment:
+      - ENV=development
+      - REFERENCE_STEP=/reference-model/804-125.stp
+      - CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: aluflex-conveyor-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    restart: always

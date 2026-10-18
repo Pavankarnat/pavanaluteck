@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+backend/venv/
+backend/.venv/
+env/
+.venv/
+
+# Build outputs
+dist/
+frontend/dist/
+build/
+*.egg-info/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+backend/__pycache__/
+backend/*/__pycache__/
+backend/*/*/__pycache__/
+
+# Environment & local files
+.env
+.env.local
+*.log
+
+# IDE & OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+scratch/
+
+
+# Generated CAD comparison output
+reports/

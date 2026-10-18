@@ -1,0 +1,596 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Application-wide Font Enforced to Inter */
+*,
+*::before,
+*::after,
+html,
+body,
+#root,
+button,
+input,
+select,
+textarea {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+.font-mono,
+code,
+kbd,
+samp {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+/* CSS Variables for Dark (default) and Light themes */
+:root,
+[data-theme='dark'],
+.dark {
+  --cad-bg: #0A1018;
+  --cad-bg-sub: #0F1722;
+  --cad-viewport: #121C27;
+  --cad-panel: #151F2B;
+  --cad-panel-elevated: #192535;
+  --cad-border: #263445;
+  --cad-border-subtle: #1E2B3A;
+  --cad-row-border: rgba(38, 52, 69, 0.6);
+  --cad-text-primary: #E8EEF5;
+  --cad-text-secondary: #91A0B3;
+  --cad-text-muted: #66768A;
+  --cad-accent: #1683E8;
+  --cad-accent-hover: #2D96F3;
+  --cad-success: #18B981;
+  --cad-warning: #F0B429;
+  --cad-error: #EF5350;
+  --cad-grid: #243546;
+  --cad-input-bg: #0F1722;
+  --cad-input-border: #263445;
+  --cad-slider-track: #0A1018;
+  --cad-footer-bg: #0F1722;
+}
+
+[data-theme='light'],
+.light,
+html[data-theme='light'],
+body[data-theme='light'] {
+  /* Official Alutec KK Graphic Manual Pantone Colors */
+  --cad-bg: #FFFFFF;
+  --cad-bg-sub: #F5F7FA;
+  --cad-viewport: #EAF0F6;
+  --cad-panel: #FFFFFF;
+  --cad-panel-elevated: #F8FAFC;
+  --cad-border: #D1D8E0;
+  --cad-border-subtle: #E4E9F0;
+  --cad-row-border: #E8EDF4;
+  --cad-text-primary: #2F2C27; /* Pantone Black C (HEX #2F2C27 / RGB 47,44,39) */
+  --cad-text-secondary: #58544F;
+  --cad-text-muted: #8A857E;
+  --cad-accent: #1A4784;      /* Pantone 287 C Blue (HEX #1A4784 / RGB 26,71,132) */
+  --cad-accent-hover: #13396B;
+  --cad-success: #107C41;
+  --cad-warning: #A45F00;
+  --cad-error: #A80000;
+  --cad-grid: #CFD7E3;
+  --cad-input-bg: #FFFFFF;
+  --cad-input-border: #CBD5E1;
+  --cad-slider-track: #E2E8F0;
+  --cad-footer-bg: #F5F7FA;
+}
+
+/* Form Input & Slider Global Styles */
+input[type="number"].cad-input {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+}
+
+.dark .cad-input,
+[data-theme='dark'] .cad-input,
+:root:not([data-theme='light']) .cad-input {
+  background-color: #0F1722 !important;
+  color: #E8EEF5 !important;
+  border: 1px solid #263445 !important;
+}
+
+.light .cad-input,
+[data-theme='light'] .cad-input,
+html[data-theme='light'] .cad-input,
+body[data-theme='light'] .cad-input {
+  background-color: #FFFFFF !important;
+  color: #18212B !important;
+  border: 1px solid #D5DCE3 !important;
+}
+
+/* CAD Range Sliders & Visible Track Bars */
+input[type="range"].cad-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  margin: 6px 0;
+  display: block;
+}
+
+/* Dark Mode Slider Track & Thumb */
+.dark input[type="range"].cad-slider,
+[data-theme='dark'] input[type="range"].cad-slider,
+:root:not([data-theme='light']) input[type="range"].cad-slider {
+  background-color: #243546 !important;
+  border: 1px solid #3B4D63 !important;
+}
+
+.dark input[type="range"].cad-slider::-webkit-slider-runnable-track,
+[data-theme='dark'] input[type="range"].cad-slider::-webkit-slider-runnable-track,
+:root:not([data-theme='light']) input[type="range"].cad-slider::-webkit-slider-runnable-track {
+  height: 8px;
+  background-color: #243546;
+  border-radius: 4px;
+}
+
+.dark input[type="range"].cad-slider::-webkit-slider-thumb,
+[data-theme='dark'] input[type="range"].cad-slider::-webkit-slider-thumb,
+:root:not([data-theme='light']) input[type="range"].cad-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #1683E8;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 0 6px rgba(22, 131, 232, 0.6);
+  cursor: pointer;
+  margin-top: -5px;
+}
+
+.dark input[type="range"].cad-slider::-moz-range-track,
+[data-theme='dark'] input[type="range"].cad-slider::-moz-range-track,
+:root:not([data-theme='light']) input[type="range"].cad-slider::-moz-range-track {
+  height: 8px;
+  background-color: #243546;
+  border: 1px solid #3B4D63;
+  border-radius: 4px;
+}
+
+.dark input[type="range"].cad-slider::-moz-range-thumb,
+[data-theme='dark'] input[type="range"].cad-slider::-moz-range-thumb,
+:root:not([data-theme='light']) input[type="range"].cad-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #1683E8;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 0 6px rgba(22, 131, 232, 0.6);
+  cursor: pointer;
+}
+
+/* Light Mode Slider Track & Thumb */
+.light input[type="range"].cad-slider,
+[data-theme='light'] input[type="range"].cad-slider,
+html[data-theme='light'] input[type="range"].cad-slider,
+body[data-theme='light'] input[type="range"].cad-slider {
+  background-color: #D5DCE3 !important;
+  border: 1px solid #CBD5E1 !important;
+}
+
+.light input[type="range"].cad-slider::-webkit-slider-runnable-track,
+[data-theme='light'] input[type="range"].cad-slider::-webkit-slider-runnable-track,
+html[data-theme='light'] input[type="range"].cad-slider::-webkit-slider-runnable-track,
+body[data-theme='light'] input[type="range"].cad-slider::-webkit-slider-runnable-track {
+  height: 8px;
+  background-color: #D5DCE3;
+  border-radius: 4px;
+}
+
+.light input[type="range"].cad-slider::-webkit-slider-thumb,
+[data-theme='light'] input[type="range"].cad-slider::-webkit-slider-thumb,
+html[data-theme='light'] input[type="range"].cad-slider::-webkit-slider-thumb,
+body[data-theme='light'] input[type="range"].cad-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #0B75D1;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  margin-top: -5px;
+}
+
+.light input[type="range"].cad-slider::-moz-range-track,
+[data-theme='light'] input[type="range"].cad-slider::-moz-range-track,
+html[data-theme='light'] input[type="range"].cad-slider::-moz-range-track,
+body[data-theme='light'] input[type="range"].cad-slider::-moz-range-track {
+  height: 8px;
+  background-color: #D5DCE3;
+  border: 1px solid #CBD5E1;
+  border-radius: 4px;
+}
+
+.light input[type="range"].cad-slider::-moz-range-thumb,
+[data-theme='light'] input[type="range"].cad-slider::-moz-range-thumb,
+html[data-theme='light'] input[type="range"].cad-slider::-moz-range-thumb,
+body[data-theme='light'] input[type="range"].cad-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #0B75D1;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+/* CAD Dropdown Select & Option Styling */
+select.cad-select,
+select {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+}
+
+.dark select,
+.dark .cad-select,
+.dark select option,
+[data-theme='dark'] select,
+[data-theme='dark'] .cad-select,
+[data-theme='dark'] select option,
+:root:not([data-theme='light']) select,
+:root:not([data-theme='light']) .cad-select,
+:root:not([data-theme='light']) select option {
+  background-color: #151F2B !important;
+  color: #E8EEF5 !important;
+  border: 1px solid #263445 !important;
+}
+
+.light select,
+.light .cad-select,
+.light select option,
+[data-theme='light'] select,
+[data-theme='light'] .cad-select,
+[data-theme='light'] select option,
+html[data-theme='light'] select,
+html[data-theme='light'] .cad-select,
+html[data-theme='light'] select option,
+body[data-theme='light'] select,
+body[data-theme='light'] .cad-select,
+body[data-theme='light'] select option {
+  background-color: #FFFFFF !important;
+  color: #18212B !important;
+  border: 1px solid #D5DCE3 !important;
+}
+
+@layer base {
+  body {
+    background-color: var(--cad-bg);
+    color: var(--cad-text-primary);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+}
+
+/* ==========================================================================
+   EXPLICIT THEME ARCHITECTURE
+   - CAD Grid is strictly isolated to 3D Viewport
+   - Uniform clean page background across the entire application
+   ========================================================================== */
+
+/* 1. DARK THEME RULES (Default) */
+.dark .app-navbar,
+[data-theme='dark'] .app-navbar,
+:root:not([data-theme='light']) .app-navbar {
+  background-color: #0F1722 !important;
+  border-bottom: 1px solid #263445 !important;
+}
+
+.dark .metric-card,
+[data-theme='dark'] .metric-card,
+:root:not([data-theme='light']) .metric-card {
+  background-color: #151F2B !important;
+  border: 1px solid #263445 !important;
+}
+
+.dark .spec-card,
+.dark .bom-card,
+[data-theme='dark'] .spec-card,
+[data-theme='dark'] .bom-card,
+:root:not([data-theme='light']) .spec-card,
+:root:not([data-theme='light']) .bom-card {
+  background-color: #151F2B !important;
+  color: #E8EEF5 !important;
+  border: 1px solid #263445 !important;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 10;
+}
+
+.dark .spec-title,
+.dark .bom-title,
+[data-theme='dark'] .spec-title,
+[data-theme='dark'] .bom-title,
+:root:not([data-theme='light']) .spec-title,
+:root:not([data-theme='light']) .bom-title {
+  color: #E8EEF5 !important;
+  font-weight: 700 !important;
+}
+
+.dark .spec-title-icon,
+.dark .bom-title-icon,
+[data-theme='dark'] .spec-title-icon,
+[data-theme='dark'] .bom-title-icon,
+:root:not([data-theme='light']) .spec-title-icon,
+:root:not([data-theme='light']) .bom-title-icon {
+  color: #1683E8 !important;
+}
+
+.dark .spec-label,
+[data-theme='dark'] .spec-label,
+:root:not([data-theme='light']) .spec-label {
+  color: #91A0B3 !important;
+  font-weight: 500 !important;
+}
+
+.dark .spec-value,
+[data-theme='dark'] .spec-value,
+:root:not([data-theme='light']) .spec-value {
+  color: #E8EEF5 !important;
+  font-weight: 700 !important;
+}
+
+.dark .spec-row,
+[data-theme='dark'] .spec-row,
+:root:not([data-theme='light']) .spec-row {
+  border-bottom: 1px solid rgba(38, 52, 69, 0.6) !important;
+}
+
+.dark .bom-badge,
+[data-theme='dark'] .bom-badge,
+:root:not([data-theme='light']) .bom-badge {
+  background-color: #0F1722 !important;
+  color: #91A0B3 !important;
+  border: 1px solid #263445 !important;
+  font-weight: 600 !important;
+}
+
+.dark .bom-header,
+[data-theme='dark'] .bom-header,
+:root:not([data-theme='light']) .bom-header {
+  color: #66768A !important;
+  font-weight: 700 !important;
+  border-bottom: 1px solid #263445 !important;
+}
+
+.dark .bom-row,
+[data-theme='dark'] .bom-row,
+:root:not([data-theme='light']) .bom-row {
+  border-bottom: 1px solid rgba(38, 52, 69, 0.4) !important;
+}
+
+.dark .bom-row:hover,
+[data-theme='dark'] .bom-row:hover,
+:root:not([data-theme='light']) .bom-row:hover {
+  background-color: rgba(25, 37, 53, 0.6) !important;
+}
+
+.dark .bom-desc,
+[data-theme='dark'] .bom-desc,
+:root:not([data-theme='light']) .bom-desc {
+  color: #E8EEF5 !important;
+  font-weight: 500 !important;
+}
+
+.dark .bom-qty,
+[data-theme='dark'] .bom-qty,
+:root:not([data-theme='light']) .bom-qty {
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+}
+
+.dark .bom-unit,
+[data-theme='dark'] .bom-unit,
+:root:not([data-theme='light']) .bom-unit {
+  color: #66768A !important;
+  font-weight: 500 !important;
+}
+
+.dark .app-footer,
+[data-theme='dark'] .app-footer,
+:root:not([data-theme='light']) .app-footer {
+  background-color: #0F1722 !important;
+  border-top: 1px solid #263445 !important;
+  color: #91A0B3 !important;
+}
+
+.dark .app-footer-heading,
+[data-theme='dark'] .app-footer-heading,
+:root:not([data-theme='light']) .app-footer-heading {
+  color: #E8EEF5 !important;
+}
+
+.dark .app-footer-link,
+[data-theme='dark'] .app-footer-link,
+:root:not([data-theme='light']) .app-footer-link {
+  color: #91A0B3 !important;
+}
+
+.dark .app-footer-link:hover,
+[data-theme='dark'] .app-footer-link:hover,
+:root:not([data-theme='light']) .app-footer-link:hover {
+  color: #1683E8 !important;
+}
+
+/* 2. LIGHT THEME RULES (Enforced clean background & opaque white cards) */
+.light .app-navbar,
+[data-theme='light'] .app-navbar,
+html[data-theme='light'] .app-navbar,
+body[data-theme='light'] .app-navbar {
+  background-color: #FFFFFF !important;
+  background: #FFFFFF !important;
+  border-bottom: 1px solid #D5DCE3 !important;
+}
+
+.light .metric-card,
+[data-theme='light'] .metric-card,
+html[data-theme='light'] .metric-card,
+body[data-theme='light'] .metric-card {
+  background-color: #FFFFFF !important;
+  background: #FFFFFF !important;
+  border: 1px solid #D5DCE3 !important;
+}
+
+.light .spec-card,
+.light .bom-card,
+[data-theme='light'] .spec-card,
+[data-theme='light'] .bom-card,
+html[data-theme='light'] .spec-card,
+html[data-theme='light'] .bom-card,
+body[data-theme='light'] .spec-card,
+body[data-theme='light'] .bom-card {
+  background-color: #FFFFFF !important;
+  background: #FFFFFF !important;
+  color: #18212B !important;
+  border: 1px solid #D5DCE3 !important;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  position: relative;
+  z-index: 10;
+}
+
+.light .spec-title,
+.light .bom-title,
+[data-theme='light'] .spec-title,
+[data-theme='light'] .bom-title,
+html[data-theme='light'] .spec-title,
+html[data-theme='light'] .bom-title {
+  color: #18212B !important;
+  font-weight: 700 !important;
+}
+
+.light .spec-title-icon,
+.light .bom-title-icon,
+[data-theme='light'] .spec-title-icon,
+[data-theme='light'] .bom-title-icon,
+html[data-theme='light'] .spec-title-icon,
+html[data-theme='light'] .bom-title-icon {
+  color: #0B75D1 !important;
+}
+
+.light .spec-label,
+[data-theme='light'] .spec-label,
+html[data-theme='light'] .spec-label {
+  color: #596777 !important;
+  font-weight: 500 !important;
+}
+
+.light .spec-value,
+[data-theme='light'] .spec-value,
+html[data-theme='light'] .spec-value {
+  color: #18212B !important;
+  font-weight: 700 !important;
+}
+
+.light .spec-row,
+[data-theme='light'] .spec-row,
+html[data-theme='light'] .spec-row {
+  border-bottom: 1px solid #D5DCE3 !important;
+}
+
+.light .bom-badge,
+[data-theme='light'] .bom-badge,
+html[data-theme='light'] .bom-badge {
+  background-color: #F3F6F9 !important;
+  color: #596777 !important;
+  border: 1px solid #D5DCE3 !important;
+  font-weight: 600 !important;
+}
+
+.light .bom-header,
+[data-theme='light'] .bom-header,
+html[data-theme='light'] .bom-header {
+  color: #596777 !important;
+  font-weight: 700 !important;
+  border-bottom: 1px solid #CBD5E1 !important;
+}
+
+.light .bom-row,
+[data-theme='light'] .bom-row,
+html[data-theme='light'] .bom-row {
+  border-bottom: 1px solid #D5DCE3 !important;
+}
+
+.light .bom-row:hover,
+[data-theme='light'] .bom-row:hover,
+html[data-theme='light'] .bom-row:hover {
+  background-color: #F8FAFC !important;
+}
+
+.light .bom-desc,
+[data-theme='light'] .bom-desc,
+html[data-theme='light'] .bom-desc {
+  color: #18212B !important;
+  font-weight: 500 !important;
+}
+
+.light .bom-qty,
+[data-theme='light'] .bom-qty,
+html[data-theme='light'] .bom-qty {
+  color: #18212B !important;
+  font-weight: 700 !important;
+}
+
+.light .bom-unit,
+[data-theme='light'] .bom-unit,
+html[data-theme='light'] .bom-unit {
+  color: #596777 !important;
+  font-weight: 500 !important;
+}
+
+.light .app-footer,
+[data-theme='light'] .app-footer,
+html[data-theme='light'] .app-footer,
+body[data-theme='light'] .app-footer {
+  background-color: #F7F9FB !important;
+  background: #F7F9FB !important;
+  border-top: 1px solid #D5DCE3 !important;
+  color: #596777 !important;
+}
+
+.light .app-footer-heading,
+[data-theme='light'] .app-footer-heading,
+html[data-theme='light'] .app-footer-heading {
+  color: #18212B !important;
+  font-weight: 700 !important;
+}
+
+.light .app-footer-link,
+[data-theme='light'] .app-footer-link,
+html[data-theme='light'] .app-footer-link {
+  color: #596777 !important;
+}
+
+.light .app-footer-link:hover,
+[data-theme='light'] .app-footer-link:hover,
+html[data-theme='light'] .app-footer-link:hover {
+  color: #0B75D1 !important;
+}
+
+/* Precision CAD Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cad-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--cad-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--cad-text-muted);
+}
