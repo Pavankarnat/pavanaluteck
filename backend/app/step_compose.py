@@ -25,9 +25,11 @@ from app.step_assembly import Assembly, Instance, _floats, load_assembly, split_
 from app.step_width import WidthModel, warp_displacement
 
 # The client's reference model; in Docker it is mounted read-only and located through REFERENCE_STEP.
+_BUNDLED_STEP = os.path.join(os.path.dirname(__file__), "assets", "804-125.stp")     # ships with the backend (deployments)
 REFERENCE_STEP = os.environ.get(
     "REFERENCE_STEP",
-    os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "public", "reference-model", "804-125.stp"),
+    _BUNDLED_STEP if os.path.exists(_BUNDLED_STEP)
+    else os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "public", "reference-model", "804-125.stp"),
 )
 
 # --- the reference conveyor: DD82,5-400+ZP90+500_1100-1300mm -------------------------------------------------
