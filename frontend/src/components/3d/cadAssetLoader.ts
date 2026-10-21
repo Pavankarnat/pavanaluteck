@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { CadCut, CadLayout } from '../../services/cadLayoutService';
+import { CadCut, CadLayout, CadWarp } from '../../services/cadLayoutService';
 
 const MM = 0.001; // the converted GLB is in metres, layouts are in millimetres
 
@@ -97,8 +97,27 @@ export class CADAssetLoader {
     const p = new THREE.Vector3();
     const shift = new THREE.Vector3();
     /** Give every mesh under `node` its own geometry with the cuts applied. `refWorld(mesh)` is the mesh's reference pose. */
-    const stretchNode = (node: THREE.Object3D, cuts: CadCut[], refWorld: (m: THREE.Mesh) => THREE.Matrix4) => {
+    const warpTmp = new THREE.Vector3();
+    const warpC = new THREE.Vector3();
+    const warpD1 = new THREE.Vector3();
+    const warpD2 = new THREE.Vector3();
+    /** Displacement (mm) of a point (mm) under the chain-width warp; mirrors backend/app/step_width.py. */
+    const warpDisplacement = (spec: CadWarp, pMm: THREE.Vector3, out: THREE.Vector3) => {
+      warpC.set(...spec.c); warpD1.set(...spec.d1); warpD2.set(...spec.d2);
+      warpTmp.copy(pMm).sub(warpC);
+      const a = warpTmp.dot(warpD1);
+      const b = warpTmp.dot(warpD2);
+      const horizontal = Math.hypot(warpTmp.x, warpTmp.y);
+      if (horizontal < 1) return out.set(0, 0, 0);            // on the bend axis: stays
+      if (a <= 0) return out.copy(warpD2).multiplyScalar(spec.sigma * spec.h);
+      if (b >= 0) return out.copy(warpD1).multiplyScalar(-spec.sigma * spec.h);
+      warpTmp.z = 0;
+      return out.copy(warpTmp).multiplyScalar((-spec.sigma * spec.h) / horizontal);
+    };
+    const stretchNode = (node: THREE.Object3D, cuts: CadCut[], refWorld: (m: THREE.Mesh) => THREE.Matrix4, warp?: CadWarp) => {
       const cutVecs = cuts.map((c) => ({ n: c.n, c: c.c, d: new THREE.Vector3(...c.d) }));
+      const pMm = new THREE.Vector3();
+      const wd = new THREE.Vector3();
       node.traverse((o) => {
         const mesh = o as THREE.Mesh;
         if (!mesh.isMesh) return;
@@ -111,6 +130,10 @@ export class CADAssetLoader {
           shift.set(0, 0, 0);
           for (const c of cutVecs) {
             if ((p.x * c.n[0] + p.y * c.n[1] + p.z * c.n[2]) / MM > c.c) shift.add(c.d);
+          }
+          if (warp) {
+            pMm.copy(p).multiplyScalar(1 / MM);
+            shift.add(warpDisplacement(warp, pMm, wd));
           }
           if (shift.lengthSq() > 0) {
             p.addScaledVector(shift, MM).applyMatrix4(inv);
@@ -126,10 +149,20 @@ export class CADAssetLoader {
         owned.push(geom);
       });
     };
+    // a part can have both a stretch and a width warp: apply them together (both are measured on the reference pose)
+    const edits = new Map<string, { path: string[]; cuts: CadCut[]; warp?: CadWarp }>();
     for (const st of layout.stretches) {
-      const node = find(st.path);
-      if (!node) { missing.push(st.path.join('/')); continue; }
-      stretchNode(node, st.cuts, (m) => world0.get(m)!);
+      const key = st.path.join('');
+      edits.set(key, { path: st.path, cuts: [...(edits.get(key)?.cuts ?? []), ...st.cuts], warp: edits.get(key)?.warp });
+    }
+    for (const wp of layout.warps ?? []) {
+      const key = wp.path.join('');
+      edits.set(key, { path: wp.path, cuts: edits.get(key)?.cuts ?? [], warp: wp.spec });
+    }
+    for (const ed of edits.values()) {
+      const node = find(ed.path);
+      if (!node) { missing.push(ed.path.join('/')); continue; }
+      stretchNode(node, ed.cuts, (m) => world0.get(m)!, ed.warp);
     }
 
     // 2. rigid moves: local = parentWorld0^-1 * M * world0   (M is a 4x4 row-major matrix, translation in mm)
@@ -150,6 +183,13 @@ export class CADAssetLoader {
       place(node, mv.matrix, world0.get(node)!, parentW0(node));
     }
 
+    // 2b. parts inside an assembly (castors of the stands) that this layout leaves out: before the stands are copied
+    for (const path of layout.hidden) {
+      if (path.length < 2) continue;
+      const node = find(path);
+      if (node) node.parent?.remove(node);
+    }
+
     // 3. repeated parts (stands, guide posts): copies of the already edited source, placed from its reference pose
     for (const cl of layout.clones) {
       const src = find([cl.source]);
@@ -157,10 +197,10 @@ export class CADAssetLoader {
       // bars carry their own stretch, so they are copied from the untouched model; stands are copied after the
       // height edits so they pick those up
       let pristine: THREE.Object3D | undefined = base;
-      if (cl.cuts) {
+      if (cl.cuts || cl.warp) {
         for (const name of [cl.source]) pristine = pristine?.children.find((c) => nodeName(c) === name);
       }
-      const copy = (cl.cuts && pristine ? pristine : src).clone(true);
+      const copy = ((cl.cuts || cl.warp) && pristine ? pristine : src).clone(true);
       copy.userData = { ...copy.userData, name: cl.name };
       if (cl.prism !== undefined) {
         // straight prism of the bar: same material, the prism's own geometry
@@ -170,17 +210,18 @@ export class CADAssetLoader {
       }
       place(copy, cl.matrix, world0.get(src)!, parentW0(src));
       src.parent.add(copy);
-      if (cl.cuts) {
+      if (cl.cuts || cl.warp) {
         // the copy's meshes correspond one-to-one with the source's, so they share its reference poses
         const srcMeshes: THREE.Mesh[] = [];
         src.traverse((o) => { if ((o as THREE.Mesh).isMesh) srcMeshes.push(o as THREE.Mesh); });
         let k = 0;
-        stretchNode(copy, cl.cuts, () => world0.get(srcMeshes[k++])!);
+        stretchNode(copy, cl.cuts ?? [], () => world0.get(srcMeshes[k++])!, cl.warp);
       }
     }
 
     // 4. reference parts this layout does not use
     for (const path of layout.hidden) {
+      if (path.length > 1) continue;
       const node = find(path);
       if (node) node.parent?.remove(node);
     }

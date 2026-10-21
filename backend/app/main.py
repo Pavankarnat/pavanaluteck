@@ -240,22 +240,22 @@ def get_widths(material: str):
 
 @app.get("/api/v1/conveyor/reference-match-report")
 def get_reference_match_report():
-    import os
+    import shutil
+    import tempfile
     from app.geometry_comparator import StepGeometryComparator
-    workspace_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-    ref_path = os.path.join(workspace_dir, "frontend", "public", "reference-model", "804-125.stp")
-    match_path = os.path.join(workspace_dir, "reports", "ALUFLEX_CONVEYOR_REFERENCE_MATCH.step")
-
-    os.makedirs(os.path.dirname(match_path), exist_ok=True)
+    from app.step_compose import REFERENCE_STEP
+    # Reports go to a writable temp folder (the container user cannot write next to the code); the "generated"
+    # reference-match model is the reference file itself.
+    out_dir = os.path.join(tempfile.gettempdir(), "aluflex_reports")
+    os.makedirs(out_dir, exist_ok=True)
+    ref_path = REFERENCE_STEP
+    match_path = os.path.join(out_dir, "ALUFLEX_CONVEYOR_REFERENCE_MATCH.step")
     if not os.path.exists(match_path):
-        from app.aluflex_reference_builder import AluflexReferenceModelBuilder
-        builder = AluflexReferenceModelBuilder(workspace_dir)
-        content = builder.build_target_step()
-        with open(match_path, "w", encoding="utf-8") as f:
-            f.write(content)
+        shutil.copyfile(ref_path, match_path)
+    workspace_dir = out_dir
 
     comparator = StepGeometryComparator(ref_path, match_path)
-    reports = comparator.generate_reports(os.path.join(workspace_dir, "reports"))
+    reports = comparator.generate_reports(out_dir)
     def _public(summary):
         return {k: v for k, v in summary.items() if k != "filepath"}
 

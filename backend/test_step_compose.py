@@ -121,7 +121,7 @@ def test_every_configuration_maps_onto_the_client_parts():
         ({"chainMaterial": "steel"}, "chain"),
         ({"width": 114.3}, "width"),
         ({"height": 500}, "working height"),
-        ({"drivePosition": "start-right"}, "motor"),
+        ({"drivePosition": "below-belt-end"}, "motor"),
         ({"curves": [{"curveType": "friction", "angle": 45, "radius": 800, "offset": 700, "direction": "left"}]}, "bend"),
     ]:
         params, notes = family_params(_config(**change))
@@ -129,6 +129,8 @@ def test_every_configuration_maps_onto_the_client_parts():
     # a drive at the infeed, no side guides and no supports are real variations of the client's parts
     p, _ = family_params(_config(drivePosition="start-left"))
     assert p.drive_at_start
+    p, notes = family_params(_config(drivePosition="end-right"))
+    assert p.motor_side == "right" and not notes                          # motor on the other side is a real variation
     p, _ = family_params(_config(sideGuides=[]))
     assert p.guides is False
     no_support = _config()
@@ -162,7 +164,7 @@ def test_stands_are_repeated_when_a_section_gets_long():
 def test_layout_endpoint_and_step_export():
     ok = client.post("/api/v1/conveyor/layout", json=_config(offset=700, height=1200))
     assert ok.status_code == 200 and ok.json()["exact"] is True
-    assert ok.json()["layout"]["params"] == {"bends": ["L"], "straights": [700.0, 500.0], "height": 1200.0, "guideHeight": 60.0, "guides": True, "supports": True, "driveAtStart": False}
+    assert ok.json()["layout"]["params"] == {"bends": ["L"], "straights": [700.0, 500.0], "height": 1200.0, "guideHeight": 60.0, "guides": True, "supports": True, "driveAtStart": False, "motorSide": "left", "width": 82.5, "foot": "brake", "doubleGuide": False}
 
     other = client.post("/api/v1/conveyor/layout", json=_config(chainMaterial="steel")).json()
     assert other["exact"] is True and other["layout"] is not None and any("chain" in n for n in other["reasons"])
@@ -195,3 +197,14 @@ def test_exported_step_is_valid_in_a_cad_kernel(tmp_path):
         invalid += 0 if BRepCheck_Analyzer(TopoDS.Solid(explorer.Current())).IsValid() else 1
         explorer.Next()
     assert solids == 715 + 2 * 166 and invalid == 0
+
+
+def test_width_changes_stretch_client_parts():
+    """Any chain width widens / narrows the client's own parts: stays an exact layout, with moves and warps."""
+    base = build_layout(Params(("L",), (400.0, 500.0), 1100.0, 60.0, True, True, False, "left", 82.5))
+    assert not base.warps
+    for w in (63.0, 304.8):
+        p = Params(("L",), (400.0, 500.0), 1100.0, 60.0, True, True, False, "left", w)
+        lay = build_layout(p)
+        assert lay.warps and lay.to_json()["params"]["width"] == w
+        assert compose_step(p, lay).startswith("ISO-10303-21")

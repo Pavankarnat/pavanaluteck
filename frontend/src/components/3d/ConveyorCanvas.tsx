@@ -266,38 +266,6 @@ export const ConveyorCanvas: React.FC<ConveyorCanvasProps> = ({
               {isCurved ? `PARAMETRIC CURVED (${curveCount} ${curveCount === 1 ? 'BEND' : 'BENDS'})` : 'PARAMETRIC STRAIGHT'}
             </span>
           </span>
-          {/* Which model is shown: the client's exact CAD parts, or the generated approximation */}
-          <span
-            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border shadow-2xs ${
-              cadStatus.state === 'exact'
-                ? 'bg-emerald-500/15 border-emerald-500/50 text-emerald-600 dark:text-emerald-400'
-                : cadStatus.state === 'generated'
-                  ? 'bg-amber-500/15 border-amber-500/50 text-amber-600 dark:text-amber-400'
-                  : 'bg-cad-panel/90 border-cad-border/80 text-cad-textSecondary'
-            }`}
-            title={
-              cadStatus.state === 'exact'
-                ? `Built from the client's exact CAD parts (804-125.stp) - ${cadStatus.legs ?? 2} stands. The STEP export contains the same parts.` +
-                  (cadStatus.reasons.length ? `\n\nNot in the client's CAD (client part shown instead):\n- ${cadStatus.reasons.join('\n- ')}` : '')
-                : cadStatus.state === 'generated'
-                  ? `Approximate generated model. The client's real parts cannot express: ${cadStatus.reasons.join('; ')}.`
-                  : 'Loading the client CAD parts...'
-            }
-          >
-            {cadStatus.state === 'exact' ? 'CLIENT CAD · EXACT PARTS' : cadStatus.state === 'generated' ? 'GENERATED MODEL' : 'LOADING CAD…'}
-          </span>
-          {cadStatus.state === 'exact' && cadStatus.reasons.length > 0 && (
-            <span
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border bg-amber-500/15 border-amber-500/50 text-amber-600 dark:text-amber-400 shadow-2xs cursor-help"
-              title={`These options have no part in the client's CAD, so the client's part is shown:\n- ${cadStatus.reasons.join('\n- ')}`}
-            >
-              {cadStatus.reasons.length} NOT IN CLIENT CAD
-            </span>
-          )}
-          {/* Flow Direction Indicator Badge */}
-          <span className="hidden sm:inline-flex items-center gap-1 bg-cad-panel/90 border border-cad-border/80 px-2 py-0.5 rounded-md text-[10px] text-cad-accent font-bold shadow-2xs">
-            FLOW: {isReverse ? '◀ REVERSE' : 'FORWARD ➔'}
-          </span>
         </div>
 
         {/* HUD Dimension Summary + Inspector Toggle */}
@@ -569,19 +537,6 @@ export const ConveyorCanvas: React.FC<ConveyorCanvasProps> = ({
         <div className="w-[1px] h-4 bg-cad-border/60 mx-0.5" />
 
         {/* Simulation Group */}
-        <button
-          onClick={handleToggleFlow}
-          title="Toggle Animated Travel Direction Flow"
-          className={`flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-mono font-medium transition-all ${
-            showFlow
-              ? 'bg-cad-accent/20 text-cad-accent border border-cad-accent/40 shadow-2xs'
-              : 'text-cad-textSecondary hover:text-cad-textPrimary hover:bg-cad-panelElevated'
-          }`}
-        >
-          <Play className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline text-[11px]">Flow</span>
-        </button>
-
         <button
           onClick={handleToggleProducts}
           title="Toggle Transported Product Demo Packages"

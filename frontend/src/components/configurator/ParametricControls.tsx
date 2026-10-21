@@ -647,45 +647,6 @@ export const ParametricControls: React.FC<ParametricControlsProps> = ({
                 </div>
               </div>
             </div>
-
-
-            {/* Travel Direction Section */}
-            <div className="border-t border-cad-border pt-4">
-              <div className="flex justify-between items-center mb-2">
-                <label className="text-[11px] font-mono font-bold text-cad-textSecondary uppercase tracking-wider">
-                  Conveyor Travel Direction
-                </label>
-                <span className="text-xs font-mono font-bold text-cad-accent">
-                  {configuration.travelDirection === 'reverse' ? 'REVERSE (◀)' : 'FORWARD (➔)'}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => updateConfig({ travelDirection: 'forward' })}
-                  className={`p-2.5 rounded border text-center font-mono transition-colors ${(configuration.travelDirection || 'forward') === 'forward'
-                    ? 'border-cad-accent bg-cad-accent/15 text-cad-textPrimary ring-1 ring-cad-accent'
-                    : 'border-cad-border bg-cad-bgSub text-cad-textSecondary hover:border-cad-textMuted'
-                    }`}
-                >
-                  <span className="text-xs font-bold block">FORWARD (➔)</span>
-                  <span className="text-[9px] text-cad-textMuted mt-0.5 block">Infeed ➔ Discharge</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => updateConfig({ travelDirection: 'reverse' })}
-                  className={`p-2.5 rounded border text-center font-mono transition-colors ${configuration.travelDirection === 'reverse'
-                    ? 'border-cad-accent bg-cad-accent/15 text-cad-textPrimary ring-1 ring-cad-accent'
-                    : 'border-cad-border bg-cad-bgSub text-cad-textSecondary hover:border-cad-textMuted'
-                    }`}
-                >
-                  <span className="text-xs font-bold block">REVERSE (◀)</span>
-                  <span className="text-[9px] text-cad-textMuted mt-0.5 block">Reverse Product Flow</span>
-                </button>
-              </div>
-            </div>
           </div>
         )}
 

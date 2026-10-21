@@ -14,12 +14,22 @@ export interface CadCut {
   d: [number, number, number]; // ... by d
 }
 
+/** Chain-width warp of a long curved part: lead / exit sides slide sideways, the bend widens radially about `c`. */
+export interface CadWarp {
+  c: [number, number, number];
+  d1: [number, number, number];
+  d2: [number, number, number];
+  sigma: number; // +1 right (inner) / -1 left (outer)
+  h: number;     // half the width change (mm)
+}
+
 export interface CadLayout {
-  params: { bends: string[]; straights: number[]; height: number; guideHeight?: number; guides?: boolean; supports?: boolean; driveAtStart?: boolean };
+  params: { bends: string[]; straights: number[]; height: number; guideHeight?: number; guides?: boolean; supports?: boolean; driveAtStart?: boolean; motorSide?: string; width?: number; foot?: string };
   /** reference world -> new world, 4x4 row-major (mm) */
   moves: { path: string[]; matrix: number[] }[];
   stretches: { path: string[]; cuts: CadCut[] }[];
-  clones: { source: string; name: string; matrix: number[]; cuts?: CadCut[]; prism?: number }[];
+  clones: { source: string; name: string; matrix: number[]; cuts?: CadCut[]; prism?: number; warp?: CadWarp }[];
+  warps?: { path: string[]; spec: CadWarp }[];
   /** reference parts this layout does not use */
   hidden: string[][];
   legs: number;

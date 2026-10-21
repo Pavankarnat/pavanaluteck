@@ -45,6 +45,11 @@ export class ConveyorScene {
   private currentConfig: ConveyorConfiguration | null = null;
   private currentPreset: CameraPreset = 'isometric';
   private isInitialLoad: boolean = true;
+  // The camera is framed once for the first model and once for the first client CAD model. After that it stays where
+  // the user put it while the conveyor is customised (no re-zoom); "Fit View" and the view buttons still move it.
+  private framedFirst = false;
+  private framedCad = false;
+  private autoFocus = false; // customisation controls no longer zoom the camera onto a component
   private currentFocusComponent: FocusTarget | null = null;
 
   // Theme & Lighting References
@@ -364,7 +369,7 @@ export class ConveyorScene {
   }
 
   public focusComponent(component: FocusTarget): void {
-    if (!this.currentConveyorGroup) return;
+    if (!this.currentConveyorGroup || !this.autoFocus) return;
 
     this.currentFocusComponent = component;
 
@@ -590,6 +595,9 @@ export class ConveyorScene {
       this.keyLight.position.copy(centre).add(new THREE.Vector3(4000, 6000, 3000));
       this.keyLight.target.updateMatrixWorld();
     }
+    // Camera: frame the first model and the first client CAD model, then leave the view alone
+    if (forceSnap ? this.framedCad : this.framedFirst) return;
+    if (forceSnap) this.framedCad = true; else this.framedFirst = true;
     if (this.currentFocusComponent && this.currentFocusComponent !== 'overview') {
       this.focusComponent(this.currentFocusComponent);
     } else {
